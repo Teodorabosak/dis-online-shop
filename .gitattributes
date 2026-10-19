@@ -1,0 +1,4 @@
+# Skripte moraju imati Unix kraj linije i kad se kloniraju na Windowsu (inace ne rade u Docker/Linux-u)
+*.sh   text eol=lf
+mvnw   text eol=lf
+*.cmd  text eol=crlf

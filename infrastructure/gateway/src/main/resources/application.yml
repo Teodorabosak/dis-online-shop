@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: gateway
+  config:
+    # konfiguracija (port, rute, eureka adresa) dolazi sa config servera
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
