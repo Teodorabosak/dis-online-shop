@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: inventory-service
+  config:
+    # port i adresa baze dolaze sa config servera (config-repo/inventory-service.yml)
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+  jpa:
+    # sema baze se pravi iskljucivo kroz Flyway skripte, Hibernate je ne dira
+    hibernate:
+      ddl-auto: none
+    open-in-view: false

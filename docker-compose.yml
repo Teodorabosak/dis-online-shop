@@ -1,7 +1,9 @@
 # Pokretanje celog sistema lokalno (potreban je samo Docker Desktop):
 #   docker compose up -d --build
 #
-# Poslovni servisi, baze i RabbitMQ dodaju se u narednim koracima.
+# Spolja je dostupan samo gateway (8080); poslovni servisi i baze su vidljivi
+# samo unutar Docker mreze. Eureka (8761) i Config Server (8888) su otvoreni
+# radi pregleda u razvoju.
 
 services:
 
@@ -49,3 +51,79 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+
+  # ---------- baze (svaki servis ima svoju) ----------
+
+  product-db:
+    image: mongo:7.0
+    volumes:
+      - product-db-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  inventory-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: inventory
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventory -d inventory"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # ---------- poslovni servisi ----------
+
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      MONGODB_URI: mongodb://product-db:27017/products
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      product-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: services/inventory-service/Dockerfile
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      DB_URL: jdbc:postgresql://inventory-db:5432/inventory
+      DB_USER: inventory
+      DB_PASSWORD: inventory
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      inventory-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8082/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  product-db-data:
+  inventory-db-data:

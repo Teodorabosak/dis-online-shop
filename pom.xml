@@ -27,6 +27,8 @@
         <module>infrastructure/config-server</module>
         <module>infrastructure/eureka-server</module>
         <module>infrastructure/gateway</module>
+        <module>services/product-service</module>
+        <module>services/inventory-service</module>
     </modules>
 
     <dependencyManagement>

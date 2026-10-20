@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: product-service
+  config:
+    # port, adresa baze i Eureke dolaze sa config servera (config-repo/product-service.yml)
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
