@@ -6,8 +6,8 @@ Autor: Teodora Bosak, I2 25/2024
 Sistem je online prodavnica izgrađena kao skup mikroservisa na **Spring Boot / Spring Cloud** platformi.
 Svaka komponenta (mikroservis, baza, message broker) je kontejnerizovana i pokreće se preko Docker Compose-a.
 
-> Status: u izradi. Trenutno postoje infrastrukturne komponente (Config Server, Eureka, Gateway);
-> poslovni servisi se dodaju u narednim koracima.
+> Status: u izradi. Gotovo: infrastruktura (Config Server, Eureka, Gateway), `product-service` i
+> `inventory-service`. Sledeće: `order-service`, `payment-service`, `notification-service`, RabbitMQ, auth.
 
 ---
 
