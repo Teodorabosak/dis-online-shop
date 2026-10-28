@@ -55,6 +55,10 @@ public class Reservation {
         this.status = ReservationStatus.RELEASED;
     }
 
+    public void markCommitted() {
+        this.status = ReservationStatus.COMMITTED;
+    }
+
     public Long getId() {
         return id;
     }

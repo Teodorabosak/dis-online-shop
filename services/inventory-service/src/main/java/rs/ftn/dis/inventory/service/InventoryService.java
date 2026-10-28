@@ -75,6 +75,20 @@ public class InventoryService {
         }
     }
 
+    /**
+     * Porudzbina je placena: rezervacija postaje trajna (roba se skida sa stanja).
+     * Poziva se asinhrono, kad stigne PaymentResult sa statusom COMPLETED.
+     */
+    @Transactional
+    public void commit(String orderId) {
+        List<Reservation> active = reservations.findByOrderIdAndStatus(orderId, ReservationStatus.ACTIVE);
+        for (Reservation reservation : active) {
+            items.findByProductId(reservation.getProductId())
+                    .ifPresent(item -> item.commit(reservation.getQuantity()));
+            reservation.markCommitted();
+        }
+    }
+
     private InventoryItem getItemOrThrow(String productId) {
         return items.findByProductId(productId).orElseThrow(() -> new StockNotFoundException(productId));
     }

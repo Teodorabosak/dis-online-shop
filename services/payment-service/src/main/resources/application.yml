@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: payment-service
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  cloud:
+    function:
+      definition: processOrder
+    stream:
+      bindings:
+        processOrder-in-0:
+          destination: orders
+          group: payment-service
+        processOrder-out-0:
+          destination: payments
+      rabbit:
+        bindings:
+          processOrder-in-0:
+            consumer:
+              auto-bind-dlq: true
+
+app:
+  payment:
+    card-limit: 200000

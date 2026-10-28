@@ -63,6 +63,13 @@ public class InventoryItem {
         reserved = Math.max(0, reserved - amount);
     }
 
+    /** Placena porudzbina: rezervisana roba trajno napusta magacin. */
+    public void commit(int amount) {
+        int taken = Math.min(amount, reserved);
+        reserved -= taken;
+        quantity -= taken;
+    }
+
     public void changeQuantity(int newQuantity) {
         if (newQuantity < reserved) {
             throw new IllegalArgumentException(

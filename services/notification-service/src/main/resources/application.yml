@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+  cloud:
+    function:
+      definition: orderCreated;paymentResult
+    stream:
+      bindings:
+        orderCreated-in-0:
+          destination: orders
+          group: notification-service
+        paymentResult-in-0:
+          destination: payments
+          group: notification-service
+      rabbit:
+        bindings:
+          orderCreated-in-0:
+            consumer:
+              auto-bind-dlq: true
+          paymentResult-in-0:
+            consumer:
+              auto-bind-dlq: true

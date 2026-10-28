@@ -93,6 +93,21 @@ class InventoryServiceTest {
     }
 
     @Test
+    void commitTakesReservedStockOffTheShelf() {
+        InventoryItem majica = new InventoryItem("p1", 10);
+        majica.reserve(4);
+        Reservation reservation = new Reservation("o1", "p1", 4);
+        when(reservations.findByOrderIdAndStatus("o1", ReservationStatus.ACTIVE)).thenReturn(List.of(reservation));
+        when(items.findByProductId("p1")).thenReturn(Optional.of(majica));
+
+        service.commit("o1");
+
+        assertThat(majica.getQuantity()).isEqualTo(6);
+        assertThat(majica.getReserved()).isZero();
+        assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.COMMITTED);
+    }
+
+    @Test
     void stockCannotBeSetBelowReservedQuantity() {
         InventoryItem majica = new InventoryItem("p1", 10);
         majica.reserve(6);

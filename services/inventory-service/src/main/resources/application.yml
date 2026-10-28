@@ -9,3 +9,16 @@ spring:
     hibernate:
       ddl-auto: none
     open-in-view: false
+  cloud:
+    function:
+      definition: paymentResult
+    stream:
+      bindings:
+        paymentResult-in-0:
+          destination: payments
+          group: inventory-service
+      rabbit:
+        bindings:
+          paymentResult-in-0:
+            consumer:
+              auto-bind-dlq: true
